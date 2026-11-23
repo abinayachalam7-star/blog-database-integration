@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BlogSphere | Blog Details</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>BlogSphere</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="create-blog.html">Create Blog</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div id="blog-detail-card" class="card">
+      <h2 id="detail-title">Loading article...</h2>
+      <div id="detail-meta" class="meta"></div>
+      <p id="detail-content"></p>
+      <br />
+      <a href="index.html" class="btn">Back to All Blogs</a>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const blogId = params.get("id");
+
+    async function loadBlogDetail() {
+      if (!blogId) {
+        document.getElementById("detail-title").textContent = "No blog ID provided";
+        return;
+      }
+      try {
+        const res = await fetch(`http://localhost:5000/api/blogs/${blogId}`);
+        if (!res.ok) throw new Error("Not found");
+        const blog = await res.json();
+        document.getElementById("detail-title").textContent = blog.title;
+        document.getElementById("detail-meta").textContent =
+          `By ${blog.author} • ${new Date(blog.createdAt).toLocaleDateString()}`;
+        document.getElementById("detail-content").textContent = blog.content;
+      } catch (e) {
+        document.getElementById("detail-title").textContent = "Blog post not found";
+      }
+    }
+
+    loadBlogDetail();
+  </script>
+</body>
+</html>
